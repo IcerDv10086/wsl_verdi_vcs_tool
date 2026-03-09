@@ -1,56 +1,40 @@
 # ==========================================================
-# Synopsys Environment Variables (Corrected)
+# Synopsys Environment Variables (Template)
 # ==========================================================
 
-# 1. VCS (Version O-2018.09-SP2)
-export VCS_HOME=/home/tbin/synopsys/vcs_2016.06/vcs/O-2018.09-SP2
+# 使用说明：
+# 1) 本文件已移除机器相关的路径和主机配置，请按你自己的环境填写。
+# 2) 将下面的 <...> 占位符替换为真实路径/主机名后再 source。
+
+# 1. VCS (示例版本：O-2018.09-SP2)
+# 请填写你本机 VCS 安装路径
+export VCS_HOME=<YOUR_VCS_HOME_PATH>
 export PATH=$PATH:$VCS_HOME/bin
 # DVE
 export PATH=$PATH:$VCS_HOME/gui/dve/bin
 
-# 2. Verdi (Version O-2018.09-SP2)
-export VERDI_HOME=/home/tbin/synopsys/verdi_2016.06-1/verdi/Verdi_O-2018.09-SP2
+# 2. Verdi (示例版本：O-2018.09-SP2)
+# 请填写你本机 Verdi 安装路径
+export VERDI_HOME=<YOUR_VERDI_HOME_PATH>
 export NOVAS_HOME=$VERDI_HOME
 export PATH=$PATH:$VERDI_HOME/bin
 
-# 3. SCL (Synopsys Common Licensing - Version 2018.06)
-export PATH=$PATH:/home/tbin/synopsys/scl_11.9/scl/2018.06/linux64/bin
+# 3. SCL (示例版本：2018.06)
+# 请填写你本机 SCL 可执行文件目录
+export SCL_BIN=<YOUR_SCL_BIN_PATH>
+export PATH=$PATH:$SCL_BIN
 
 # 4. LICENSE
-export LM_LICENSE_FILE=27000@DESKTOP-PRI0FN9
-export SNPSLMD_LICENSE_FILE=27000@DESKTOP-PRI0FN9
+# 请填写你的 license server，例如：27000@your-hostname
+export LM_LICENSE_FILE=<YOUR_LICENSE_SERVER>
+export SNPSLMD_LICENSE_FILE=<YOUR_LICENSE_SERVER>
 
-# 5. Others
+# 5. 其他推荐项
 export VCS_ARCH_OVERRIDE=linux
 alias vcs="vcs -full64"
 alias verdi="verdi -full64"
 alias dve="dve -full64"
 
-# ==========================================================
-# Auto-License Setup: Dummy Interface & Hosts Mapping
-# ==========================================================
-LICENSE_MAC="00:15:5d:f7:c2:2f"
-LICENSE_IP="192.168.50.50"
-HOSTNAME=$(hostname)
-
-# 1. 设置虚拟网卡 (eth1)
-if ! ip link show eth1 >/dev/null 2>&1; then
-    sudo ip link add eth1 type dummy
-    sudo ip link set dev eth1 address $LICENSE_MAC
-    sudo ip addr add $LICENSE_IP/24 dev eth1
-    sudo ip link set eth1 up
-    echo "🔧 Created dummy interface eth1 ($LICENSE_IP) with MAC $LICENSE_MAC"
-fi
-
-# 2. 注入 Hosts 映射 (关键步骤!)
-# 检查 hosts 文件里是否已经指向了我们的虚拟 IP
-if ! grep -q "$LICENSE_IP.*$HOSTNAME" /etc/hosts; then
-    echo "🔧 Updating /etc/hosts to map $HOSTNAME -> $LICENSE_IP..."
-    # 删除旧的解析 (如果有)
-    sudo sed -i "/$HOSTNAME/d" /etc/hosts
-    # 添加新的解析
-    echo "$LICENSE_IP $HOSTNAME" | sudo tee -a /etc/hosts >/dev/null
-    echo "✅ Hosts updated."
-fi
-# ==========================================================
-export LD_PRELOAD=~/lmfakemac.so
+# 6. LD_PRELOAD (可选)
+# 若使用 lmfakemac.so 方案，请确认文件路径正确
+export LD_PRELOAD=$HOME/lmfakemac.so

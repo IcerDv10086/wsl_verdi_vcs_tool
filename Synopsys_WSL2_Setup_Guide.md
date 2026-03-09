@@ -1,6 +1,6 @@
 # Synopsys EDA (VCS/Verdi 2018) on WSL2 (Ubuntu 24.04) 完整部署指南
 
-> 参考自虚拟机安装：<https://blog.csdn.net/huayangshiboqi/article/details/89525723>
+> 参考自虚拟机安装：<https://blog.csdn.net/huayangshiboqi/article/details/89525723>，目的是基于windows安装vcs 和 verdi，方便本地做一些小想法的测试。使用WSL遇到最主要的问题是第4个，MAC地址随机造成 license 失效。本文使用一种方式进行解决。
 
 ## 1. 资源准备与获取
 
@@ -15,12 +15,13 @@
 ### 1.2 配置文件库 (GitHub)
 
 配置文件、启动脚本及补丁代码托管于 GitHub：
-> **[仓库链接]** (请在此处填入你的 GitHub 仓库地址)
+> <https://github.com/IcerDv10086/wsl_verdi_vcs_tool>
 
 你需要下载或关注的文件：
 
 - `.bashrc_synopsys`: 完整的环境变量配置模板。
 - `lmfakemac.c`: 针对 WSL2 的 MAC 地址伪造源码。
+- `lmfakemac.so`: 编译结果文件
 
 ---
 
@@ -73,16 +74,14 @@ rm -rf libpng_temp *.deb
 
 参考对应目录链接
 
-## 4. license适配
+## 4. license适配与伪造MAC地址
 
 WSL2 的 MAC 地址随机变化且无法固定，导致 License 校验失败。我们通过 LD_PRELOAD 劫持系统调用来解决。
 
 ### 4.1 伪造库（lmfakemac.c）与编译
 
-编译文件：lmfakemac.c
-编译结果：lmfakemac.so
-
-放置在home/用户/目录下
+1. 编译文件：lmfakemac.c，编译到用户目录下，或者直接将编译结果：lmfakemac.so，放置在home/用户/目录下
+2. source .bashrc 启动劫持系统调用
 
 ### 4.2 激活
 
